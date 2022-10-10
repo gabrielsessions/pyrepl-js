@@ -1,0 +1,42 @@
+</html>
+
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/>
+        <meta name="description" content="Example 1"/>
+        <title>Service SPIKE</title>
+        <script defer="defer" src="../build/main.9763b42e.js"></script>
+    </head>
+        
+<body>
+
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <h1 style="text-align:center">Example 3: Code Editor</h1>
+    <div id="root"></div> <br>
+
+    <label for="code">Enter your code here:</label> <br> <br>
+
+    <textarea id="code" name="code" rows="15" cols="100"></textarea> <br> <br>
+
+    <button onclick="runCode()">Run Code!</button>
+
+
+    <script>
+        function runCode() {
+            console.log("click")
+            
+            var code = document.getElementById("code").value;
+
+            window.pyrepl.write = code;
+        }
+    </script>
+
+    
+    
+</body>
+
+</html>

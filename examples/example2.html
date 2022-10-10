@@ -1,0 +1,44 @@
+</html>
+
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/>
+        <meta name="description" content="Example 1"/>
+        <title>Service SPIKE</title>
+        <script defer="defer" src="../build/main.9763b42e.js"></script>
+    </head>
+        
+<body>
+
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <h1 style="text-align:center">Example 2: Print a message</h1>
+    <div id="root"></div> <br>
+
+    <label for="message">Enter a message: </label>
+    <input type="text" id="message" name="message" ><br> <br>
+    <label for="seconds">Number of seconds: </label>
+    <input type="number" id="seconds" name="seconds" ><br> <br>
+    <button onclick="showText()">Show on Hub Display</button>
+
+
+    <script>
+        function showText() {
+            console.log("click")
+            
+            var message = document.getElementById("message").value;
+            var seconds = document.getElementById("seconds").value;
+
+            window.pyrepl.write = `import display
+display.display_text_for_time("${message}", ${seconds * 1000}, 100)`
+        }
+    </script>
+
+    
+    
+</body>
+
+</html>
