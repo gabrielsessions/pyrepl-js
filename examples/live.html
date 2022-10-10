@@ -1,0 +1,67 @@
+
+<body>
+    
+    
+</body>
+</html>
+
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/>
+        <meta name="description" content="Example 1"/>
+        <title>Service SPIKE</title>
+        <script defer="defer" src="https://cdn.jsdelivr.net/gh/gabrielsessions/pyrepl-js/build/main.9763b42e.js"></script>
+    </head>
+        
+<body>
+
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <h1 style="text-align:center">Example 1: Run a motor!</h1>
+    <div id="root"></div>
+
+    <p>Specify a motor port and length of time to run the motor:</p>
+    <input type="radio" id="portA" name="fav_language" value="port.PORTA">
+    <label for="portA">Port A</label><br>
+    <input type="radio" id="portB" name="fav_language" value="port.PORTB">
+    <label for="portB">Port B</label><br>
+    <input type="radio" id="PORTC" name="fav_language" value="port.PORTC">
+    <label for="PORTC">Port C</label><br>
+    <input type="radio" id="PORTD" name="fav_language" value="port.PORTD">
+    <label for="PORTD">Port D</label><br>
+    <input type="radio" id="PORTE" name="fav_language" value="port.PORTE">
+    <label for="PORTE">Port E</label><br>
+    <input type="radio" id="PORTF" name="fav_language" value="port.PORTF">
+    <label for="PORTF">Port F</label><br> <br>
+    <label for="seconds">Number of seconds: </label>
+    <input type="number" id="seconds" name="seconds" ><br> <br>
+    <button onclick="runMotors()">Run Motors</button>
+
+
+    <script>
+        function runMotors() {
+            console.log("click")
+            var ele = document.getElementsByName('fav_language');
+            var port = "";
+              
+              for(i = 0; i < ele.length; i++) {
+                    if(ele[i].checked)
+                        port = ele[i].value;
+              }
+            var seconds = document.getElementById("seconds").value;
+
+            console.log(port)
+
+            window.pyrepl.write = `import motor, port
+motor.motor_move_for_time(${port}, ${seconds*1000}, 5000)`
+        }
+    </script>
+
+    
+    
+</body>
+
+</html>
