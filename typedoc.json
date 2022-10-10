@@ -1,0 +1,4 @@
+{
+    "entryPoints": ["./src/components/*.{js,jsx,ts,tsx}"],
+    "out": "docs"
+}
