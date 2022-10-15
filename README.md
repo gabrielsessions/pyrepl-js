@@ -5,6 +5,7 @@ Web-Based extension for connecting a webpage to a LEGO SPIKE Prime Hub
 Supported Operating Systems
 - SPIKE 2
 - SPIKE 3
+- Other MicroPython Devices?
 
 ## How to use
 1. Create a new HTML project with some default boilerplate code.
