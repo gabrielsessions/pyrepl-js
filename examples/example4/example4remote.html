@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/>
+        <meta name="description" content="Example 1"/>
+        <title>Service SPIKE</title>
+        <script type="module" src="./remote.js"></script>
+        <style>
+            .grid-container {
+              display: grid;
+              grid-template-columns: auto auto auto;
+              background-color: #2196F3;
+              padding: 10px;
+              margin: 20px;
+            }
+            .grid-item {
+              background-color: rgba(255, 255, 255, 0.8);
+              border: 1px solid rgba(0, 0, 0, 0.8);
+              padding: 20px;
+              font-size: 30px;
+              text-align: center;
+            }
+        </style>
+    </head>
+
+    
+        
+<body>
+
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <h1 style="text-align:center">Example 4 (Remote): Remote Control Car</h1>
+    <div id="root"></div>
+
+    <p>Click a button to make a car move! (SPIKE needs to be connected on the <a href ="example4local.html">Local Page</a>)</p>
+    <div class="grid-container">
+        <div class="grid-item"></div>
+        <div class="grid-item">
+            <button id="forward">Go Forward</button>
+        </div>
+        <div class="grid-item"></div>
+        <div class="grid-item">
+            <button id="left">Turn Left</button>
+        </div>
+        <div class="grid-item">
+            <button id="stop">Stop Car</button>
+        </div>
+        <div class="grid-item">
+            <button id="right">Turn Right</button>
+        </div>
+        <div class="grid-item"></div>
+        <div class="grid-item">
+            <button id="backward">Go Backward</button>
+        </div>
+        <div class="grid-item"></div>
+    </div>
+
+
+    <script>
+        function runMotors() {
+            console.log("click")
+            var ele = document.getElementsByName('fav_language');
+            var port = "";
+              
+              for(i = 0; i < ele.length; i++) {
+                    if(ele[i].checked)
+                        port = ele[i].value;
+              }
+            var seconds = document.getElementById("seconds").value;
+
+            console.log(port)
+
+            window.pyrepl.write = `import motor, port
+motor.motor_move_for_time(${port}, ${seconds*1000}, 5000)`
+        }
+    </script>
+
+    
+    
+</body>
+
+</html>
