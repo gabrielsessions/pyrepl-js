@@ -20,7 +20,7 @@ motor.motor_move_for_time(port.PORTB, 500, 5000)`;
 
 const moveRight = 
 `import motor
-motor.motor_move_for_time(port.PORTB, 500, 5000)`;
+motor.motor_move_for_time(port.PORTA, 500, 5000)`;
 
     
 const firebaseConfig = {
