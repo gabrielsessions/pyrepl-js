@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/>
         <meta name="description" content="Example 1"/>
         <title>Service SPIKE</title>
-        <script defer="defer" src="../build/main.9763b42e.js"></script>
+        <script defer="defer" src="../build/main.475782e7.js"></script>
     </head>
         
 <body>
@@ -16,17 +16,17 @@
     <div id="root"></div>
 
     <p>Specify a motor port and length of time to run the motor:</p>
-    <input type="radio" id="portA" name="fav_language" value="port.PORTA">
+    <input type="radio" id="portA" name="portLetter" value="port.PORTA">
     <label for="portA">Port A</label><br>
-    <input type="radio" id="portB" name="fav_language" value="port.PORTB">
+    <input type="radio" id="portB" name="portLetter" value="port.PORTB">
     <label for="portB">Port B</label><br>
-    <input type="radio" id="PORTC" name="fav_language" value="port.PORTC">
+    <input type="radio" id="PORTC" name="portLetter" value="port.PORTC">
     <label for="PORTC">Port C</label><br>
-    <input type="radio" id="PORTD" name="fav_language" value="port.PORTD">
+    <input type="radio" id="PORTD" name="portLetter" value="port.PORTD">
     <label for="PORTD">Port D</label><br>
-    <input type="radio" id="PORTE" name="fav_language" value="port.PORTE">
+    <input type="radio" id="PORTE" name="portLetter" value="port.PORTE">
     <label for="PORTE">Port E</label><br>
-    <input type="radio" id="PORTF" name="fav_language" value="port.PORTF">
+    <input type="radio" id="PORTF" name="portLetter" value="port.PORTF">
     <label for="PORTF">Port F</label><br> <br>
     <label for="seconds">Number of seconds: </label>
     <input type="number" id="seconds" name="seconds" ><br> <br>
@@ -36,7 +36,7 @@
     <script>
         function runMotors() {
             console.log("click")
-            var ele = document.getElementsByName('fav_language');
+            var ele = document.getElementsByName('portLetter');
             var port = "";
               
               for(i = 0; i < ele.length; i++) {

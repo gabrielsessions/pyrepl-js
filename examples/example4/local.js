@@ -6,21 +6,21 @@ motor.motor_stop()`;
 
 const moveForward = 
 `import motor, port
-motor.motor_move_for_time(port.PORTA, 1000, 5000)
-motor.motor_move_for_time(port.PORTB, 1000, -5000)`;
+motor.motor_move_for_time(port.PORTA, 1000, -5000)
+motor.motor_move_for_time(port.PORTB, 1000, 5000)`;
 
 const moveBackward = 
 `import motor, port
-motor.motor_move_for_time(port.PORTA, 1000, -5000)
-motor.motor_move_for_time(port.PORTB, 1000, 5000)`;
+motor.motor_move_for_time(port.PORTA, 1000, 5000)
+motor.motor_move_for_time(port.PORTB, 1000, -5000)`;
 
 const moveLeft = 
 `import motor, port
 motor.motor_move_for_time(port.PORTB, 500, 5000)`;
 
 const moveRight = 
-`import motor
-motor.motor_move_for_time(port.PORTA, 500, 5000)`;
+`import motor, port
+motor.motor_move_for_time(port.PORTA, 500, -5000)`;
 
     
 const firebaseConfig = {
