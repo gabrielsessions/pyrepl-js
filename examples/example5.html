@@ -12,18 +12,69 @@
 
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
-    <h1 style="text-align:center">Example 5: Force Sensor Game</h1>
+    <h1 style="text-align:center">Example 5: The Motor Adjustment Game!</h1>
     <div id="root"></div> <br>
+
+    <p>Try to turn the a motor in PORTA to a specified degree value! How close can you get?</p>
+
+
+    <h4>Target Degree Value: <span id="target-value"></span></h4>
+    <h4>My Motor Degree Value:  <span id="motor-value"></span></h4>
+    <p id="results"></p>
+
+    <button id="confirm-button">Start the Game!</button>
+
+
+    <p>Challenge: Can you find a way to win this every time? (Hint: Right Click + Inspect)</p>
+
 
     
     <script>
-        function runCode() {
-            console.log("click")
-            
-            var code = document.getElementById("code").value;
+        // DOM Elements to insert data into
+        const button = document.getElementById("confirm-button");
+        const degreesText = document.getElementById("target-value");
+        const resultsText = document.getElementById("results");
+        const motorText = document.getElementById("motor-value");
+        
+        // States that controls how the game flows
+        const INITIAL_BUTTON_STATE = "Start the Game!";
+        const SET_MOTOR_BUTTON_STATE = "Ready to check!";
+        const TRY_AGAIN_BUTTON_STATE = "Try Again?";
+        let degrees;
 
-            window.pyrepl.write = code;
-        }
+        // Actions to be performed when the main button is clicked
+        button.addEventListener("click", () => {
+            // Throw error if PyREPL is not active
+            if (!window.pyrepl.isActive) {
+                console.error("No SPIKE Plugged In, cannot proceed");
+                alert("SPIKE not detected, please connect a SPIKE Prime Hub and try again");
+            }
+            
+            // Starts a new game
+            else if (button.innerText === INITIAL_BUTTON_STATE || button.innerText === TRY_AGAIN_BUTTON_STATE) {
+                button.innerText = SET_MOTOR_BUTTON_STATE;
+                degrees = Math.floor(Math.random() * 360) - 180;
+                degreesText.innerText = degrees;
+                motorText.innerText = "";
+            }
+
+            // Checks if your motor position matches the target one
+            else if (button.innerText === SET_MOTOR_BUTTON_STATE) {
+                window.pyrepl.write = "import port";
+                window.pyrepl.write = "port.port_getSensor(port.PORTA)[2]";
+                setTimeout(() => {
+                    let consoleOut = window.pyrepl.read;
+                    const sensorValue = consoleOut[consoleOut.length - 2]
+                    const intSensorValue = parseInt(sensorValue.slice(0, -1));
+                    
+                    motorText.innerText = intSensorValue;
+                    resultsText.innerText = intSensorValue === degrees? "Congrats! You Win!" : "Not a match, try again?"; 
+                    button.innerText = "Try Again?"
+                }, 50);
+                
+            }
+        })
+
     </script>
     
 </body>
