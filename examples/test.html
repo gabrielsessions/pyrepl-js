@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script defer="defer" src="https://cdn.jsdelivr.net/gh/gabrielsessions/pyrepl-js/build/main.js"></script>
+</head>
+<body>
+    <button onclick="run()" style="margin-bottom: 20px;">Click to run script</button>
+    
+    <div id="root"></div>
+    <script>
+        function run() {
+window.pyrepl.write = `
+import util, time
+import port, motor, drivebase
+import force_sensor, display
+
+# PORTS
+LR1 = port.PORTA
+LR2 = port.PORTF
+FB1 = port.PORTC
+FB2 = port.PORTE
+touch1 = port.PORTB
+touch2 = port.PORTD
+
+# defaults
+zero_position = 0
+speed_val = 5000
+FB_delta_change = 15
+LR_delta_change = 10
+move_delay = 0.1 # num seconds to delay after moving motor
+
+max_FB = 120
+min_FB = -120
+max_LR = 65
+min_LR = -65
+
+# debugging helper function (tracking motor positions/values)
+def print_position(motor1, motor2, extra_string = ''):
+    m1_pos = port.port_getSensor(motor1)[1]
+    m2_pos = port.port_getSensor(motor2)[1]
+    print(extra_string + 'Position:', m1_pos, m2_pos)
+
+# drivebase variables/functions
+FB_drivebase = 0
+LR_drivebase = 1
+def init_drivebase():
+    n = drivebase.drivebase_init(FB_drivebase, FB1, FB2)
+    n = drivebase.drivebase_init(LR_drivebase, LR1, LR2)
+def free_drivebase():
+    drivebase.drivebase_free(FB_drivebase)
+    drivebase.drivebase_free(LR_drivebase)
+
+    `;
+    setTimeout(() => {
+        window.pyrepl.write = `
+# initialize drivebase
+init_drivebase()
+
+# move motor locations: FRONT/BACK
+def FB_zero():
+    print('ZERO FB')
+    n = motor.motor_move_to_position(FB1, zero_position, speed_val)
+    n = motor.motor_move_to_position(FB2, zero_position, speed_val)
+    time.sleep(move_delay)
+    print_position(FB1, FB2)
+def FB_drivebase_move(param1, param2, param3, param4):
+    n = drivebase.drivebase_tank_move_for_degrees(param1, param2, param3, param4)
+    time.sleep(move_delay)
+def FB_move(direction, amount_scale = 1):
+    current_FB = port.port_getSensor(FB2)[1]
+    amount = (direction * FB_delta_change) * amount_scale
+    if (amount < 0 and (current_FB + amount) < min_FB):
+        return
+    if (amount > 0 and (current_FB + amount) > max_FB):
+        return
+    FB_drivebase_move(FB_drivebase, speed_val, speed_val, amount)
+    print_position(FB1, FB2)
+def FB_forward():
+    print('MOVE F')
+    FB_move(1)
+def FB_backward():
+    print('MOVE B')
+    FB_move(-1)
+
+# move motor locations: LEFT/RIGHT
+def LR_zero():
+    print('ZERO LR')
+    n = motor.motor_move_to_position(LR1, zero_position, speed_val)
+    n = motor.motor_move_to_position(LR2, zero_position, speed_val)
+    time.sleep(move_delay)
+    print_position(LR1, LR2)
+def LR_drivebase_move(param1, param2, param3, param4):
+    n = drivebase.drivebase_tank_move_for_degrees(param1, param2, param3, param4)
+    time.sleep(move_delay)
+def LR_move(direction, amount_scale = 1):
+    current_LR = port.port_getSensor(LR2)[1]
+    amount = (direction * LR_delta_change) * amount_scale
+    if (amount < 0 and (current_LR + amount) < min_LR):
+        return
+    if (amount > 0 and (current_LR + amount) > max_LR):
+        return
+    LR_drivebase_move(LR_drivebase, speed_val, speed_val, amount)
+    print_position(LR1, LR2)
+def LR_left():
+    print('MOVE L')
+    LR_move(1)
+def LR_right():
+    print('MOVE R')
+    LR_move(-1)
+
+#### MAIN CODE ####
+
+# STEP 1 (program started)
+# - ZERO OUT EVERYTHING
+# - do it twice to be sure
+FB_zero()
+LR_zero()
+FB_zero()
+LR_zero()
+time.sleep(2)
+
+num_steps = 100
+step_wait = 0.1
+print('## start monitoring input sensor ##')
+
+for i in range(num_steps):
+    # get val
+    f1 = int(force_sensor.get_force(touch1) / 10)
+    f2 = int(force_sensor.get_force(touch2) / 10)
+    if (f1 == 10 or f2 == 10):
+        break # end and cleanup/quit
+    # move FB
+    if (f1 < 5):
+        FB_forward()
+    else:
+        FB_backward()
+    # move LR
+    if (f2 < 5):
+        LR_right()
+    else:
+        LR_left()
+    time.sleep(step_wait)
+
+# END OF PROGRAM
+# - Clean up Motors
+print('## END ##')
+FB_zero()
+LR_zero()
+
+free_drivebase()`;
+    }, 10);
+    
+        }
+    </script>
+</body>
+</html>
