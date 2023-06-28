@@ -1,7 +1,13 @@
+/*
+    WebSerial.tsx
+    By: Gabriel Sessions
+
+    Faciliates the interaction between client code and the WebSerial API
+
+    Last Edited: 10/20/22
+*/
 
 import Queue from "./Queue";
-import SPIKE2 from "./SPIKE2/SPIKE2";
-import SPIKE3 from "./SPIKE3/SPIKE3";
 
 /*~ https://wicg.github.io/serial/#dom-serial */
 interface Serial extends EventTarget {
@@ -75,7 +81,9 @@ interface TextEncoderStream {
     writable: WritableStream
 }
 
+// Main Class to Export
 class WebSerial {
+    // Class Constants
     static CONTROL_A: string = '\x01'; // CTRL-A character 
     static CONTROL_B: string = '\x02'; // CTRL-B character
     static CONTROL_C: string = '\x03'; // CTRL-C character 
@@ -85,8 +93,9 @@ class WebSerial {
     static ENTER: string = '\r\n' // NEWLINE character
     static TAB: string = '\x09' // TAB character
 
+    // Private member variables
     private consoleQueue: Queue = new Queue();
-    private os: number = 0;
+    private os: number = 0; // Not enabled yet
     private port: Serial = navigator.serial;
     private portRequest: any = undefined;
     private isWriteInit: boolean = false;
@@ -94,19 +103,14 @@ class WebSerial {
     private writer: any = undefined;
     private writerInitialized: boolean | Promise<boolean> = false;
 
-    private serviceSPIKE: SPIKE2 | SPIKE3 | undefined = undefined;
+    // Publically accessible variables
+    public isActive: boolean = false;
+    public executeAfterInit: Function = () => {console.log("PyREPL Initialized")};
 
-    // Important!
-    isActive: boolean = false;
-
-    constructor() {
-
-    }
 
     set writer_Initialized(newVal: boolean) {
         this.writerInitialized = newVal;
     }
-    
 
     /**
      * Initializes a WebSerial connection between a SPIKE Prime hub
@@ -123,11 +127,10 @@ class WebSerial {
 
         // wait for the port to open.
         try {
-            // @ts-ignore
             await this.portRequest.open({ baudRate: 115200 });
         }
         catch (er) {
-            console.log("%cTuftsCEEO ", "color: #3ba336;", er);
+            console.log("%cPyREPL ", "color: #3ba336;", er);
             if (errorFunction !== undefined)
                 errorFunction(er);
             //await this.portRequest.close();
@@ -135,12 +138,11 @@ class WebSerial {
             
         }
     
-        // @ts-ignore
         if (this.portRequest.readable) {
-            await this.writeToPort([WebSerial.CONTROL_C])
+            this.rawWriteToPort(WebSerial.CONTROL_C)
             this.readPort(errorFunction);
-            //await this.getOS();
 
+            this.executeAfterInit();
             return true;
         }
         else {
@@ -148,6 +150,8 @@ class WebSerial {
         } 
     }
 
+    // Not Enabled Yet
+    // Checks the OS Version of a SPIKE Prime Hub
     private async getOS(): Promise<void> {
 
         const VERSION_CUTOFF = 16;
@@ -204,6 +208,7 @@ class WebSerial {
         return ("0");
     }
 
+    // Not finished, getHubName should fetch info from hub filesystem
     private getHubName(): string {
         return "SPIKE Hub";
     }
@@ -228,11 +233,11 @@ class WebSerial {
                     break;
                 }
                     curLine += value;
+                    console.log(value)
                     const lineArr = curLine.split('\n');
                     if (lineArr.length > 1) {
                         for (let i = 0; i < lineArr.length - 1; i++) {
                             this.consoleQueue.enqueue(lineArr[i]);
-                            console.log(lineArr[i]);
                         }
                         curLine = lineArr[lineArr.length - 1];
                     }
@@ -240,10 +245,19 @@ class WebSerial {
             } catch (error) {
                 console.error(error);
                 errorFunction(error);
+                this.isActive = false;
             } finally {
                 reader.releaseLock();
             }
         }
+    }
+
+    public getOutput(): string[] {
+        return(this.consoleQueue.getAll())
+    }
+
+    public clearConsole(): void {
+        this.consoleQueue.clear();
     }
 
     /**
@@ -253,6 +267,7 @@ class WebSerial {
         this.textEncoder.readable.pipeTo(this.portRequest.writable);
         this.writer = this.textEncoder.writable.getWriter();
         this.writerInitialized = true;
+        this.isActive = true;
         
     }
     
@@ -261,20 +276,43 @@ class WebSerial {
      * @param lines - an array of lines to write to the serial port
      */
     public writeToPort(lines:Array<string>): void {
-        if (!this.writerInitialized) {
-            this.initWriteStream();
-            
+
+        try {
+            if (!this.isActive)
+                this.initWriteStream();
         }
-        console.log("----------------WRITING TO MICROPROCESSOR----------------")
+        catch {
+            console.error("Error: Device not connected, cannot write data");
+            return;
+        }
+
+        console.log("%cPyREPL ", "color: #3ba336;", "----------------WRITING TO MICROPROCESSOR----------------");
+        this.writer.write(WebSerial.CONTROL_E);
         // Writes code one line at a time
         lines.forEach((element) => {
             console.log(element)
             this.writer.write(element + "\r\n");
         });
 
+        this.writer.write(WebSerial.CONTROL_D);
 
-        console.log("----------------FINISHED WRITING----------------")
-}
+
+        console.log("%cPyREPL ", "color: #3ba336;", "----------------FINISHED WRITING----------------");
+    }
+
+    public rawWriteToPort(line: string) {
+        try {
+            if (!this.isActive)
+                this.initWriteStream();
+        }
+        catch {
+            console.error("Error: Device not connected, cannot write data");
+            return;
+        }
+
+        console.log(line)
+        this.writer.write(line);
+    }
 }
 
 export default WebSerial;

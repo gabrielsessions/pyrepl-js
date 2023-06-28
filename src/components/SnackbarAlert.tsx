@@ -17,9 +17,14 @@ interface alertProps {
     type: AlertColor
 }
 
-
 export default function AlertSnackbar(props: alertProps) {
 
+  /**
+   * Closes the snackbar
+   * @param event - Event that occurs (not used in function)
+   * @param reason - Reason why the even occurred
+   * @returns - Nothing
+   */
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -28,6 +33,11 @@ export default function AlertSnackbar(props: alertProps) {
     props.setOpen(false);
   };
 
+  /**
+   * Depending on the alert color, return the correct alert title
+   * @param type - Type of alert, see alert colors type definition
+   * @returns A string with the title of the aler
+   */
   function getAlertTitle(type: AlertColor): string {
     switch(type) {
         case "error":
@@ -49,8 +59,13 @@ export default function AlertSnackbar(props: alertProps) {
     <div>
         <Snackbar open={props.open} autoHideDuration={5000} onClose={handleClose}>
             <Alert severity={props.type}>
-                <AlertTitle>{getAlertTitle(props.type)}</AlertTitle>
+              <div>
+                <AlertTitle>
+                  {getAlertTitle(props.type)}
+                </AlertTitle>
                 {props.text}
+              </div>
+                
             </Alert>
         </Snackbar>
     </div>

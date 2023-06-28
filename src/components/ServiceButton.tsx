@@ -9,15 +9,13 @@
     Last Edited: October 10th, 2022
 */
 
-import React, {useEffect, useMemo, useState} from "react";
-import { Fab, Snackbar, Tooltip } from "@mui/material";
+import React, {useEffect, useState} from "react";
+import { Fab, Tooltip } from "@mui/material";
 import CableIcon from '@mui/icons-material/Cable';
 import CircularProgress from "@mui/material/CircularProgress";
 import { AlertColor } from "@mui/material";
 
-
 import WebSerial from "./WebSerial";
-import Queue from "./Queue";
 import SnackbarAlert from "./SnackbarAlert";
 
 type Color = 'inherit' | 'primary' | 'secondary' | 'warning' | 'info' | 'success' | 'default' | 'error';
@@ -176,7 +174,6 @@ export function ServiceButton(props: ButtonProps) {
 
     const [alert, setAlert] = useState(initAlert);
     
-
     /**
      * Triggers an action when the ServiceButton is clicked, depending on 
      * which state the button is in.
@@ -199,9 +196,8 @@ export function ServiceButton(props: ButtonProps) {
             if (state === "Connected") {
                 const pyrepl: any = window.pyrepl;
 
-                pyrepl.write = `import sound
-sound.beepPlay(500)`
-                //serial.writeToPort([WebSerial.CONTROL_E, "import sound", "sound.beepPlay(500)", WebSerial.CONTROL_D])
+                pyrepl.write = `from hub import speaker
+speaker.beep(500)`
                 
             }
         }
@@ -278,20 +274,61 @@ sound.beepPlay(500)`
 
     type PyreplProxyObject = {
         "write": string; 
+        "read": string[];
     };
     
     // Fetches user command calls from the browser window and executes appropriate WebSerial actions
     useEffect(() => {
-        const targetObj: PyreplProxyObject  = {"write": ""};
+        const targetObj: PyreplProxyObject  = {"write": "", "read": []};
         const pyreplProxy: any = new Proxy(targetObj, {
-            set: function (target: PyreplProxyObject, key: string, value: string) {
-
+            set: function (target: PyreplProxyObject, key: string, value: any) {
                 if (key === "write") {
-                    serial.writeToPort([WebSerial.CONTROL_E, ...(value.split("\n")), WebSerial.CONTROL_D])
+                    if (typeof(value) == 'string') {
+                        serial.rawWriteToPort(WebSerial.CONTROL_E)
+                        const delayInterval = 8 // 8ms per line
+                        for (let i = 0; i < value.split("\n").length; i++) {
+                            setTimeout(() => {
+                                serial.rawWriteToPort(value.split("\n")[i] + "\r")
+                            }, i*delayInterval);
+                        }
+                        setTimeout(() => {
+                            serial.rawWriteToPort(WebSerial.CONTROL_D)
+                        }, delayInterval * value.split("\n").length + 1);
+                    }
+                    else {
+                        serial.writeToPort([WebSerial.CONTROL_E, ...(value.split("\n")), WebSerial.CONTROL_D])
+                    }
+                    
                 }
-                //target[key] = value;
-
+                
+                // Needs to be a function
+                else if (key === "executeAfterInit") {
+                    if (typeof value === 'function')
+                        serial.executeAfterInit = value;
+                    else 
+                        console.error("Error: executeAfterInit value must be a function name. Value given to onActivation was: " + typeof value);
+                }
                 return true;
+            },
+
+            get: function (target: PyreplProxyObject, key: string) {
+                if (key === "read") {
+                    target["read"] = serial.getOutput();
+                    return target["read"];
+                }
+                else if (key === "isActive") {
+                    return serial.isActive;
+                }
+                else if (key === "clearConsole") {
+                    serial.clearConsole();
+                }
+                else if (key === "stop") {
+                    serial.writeToPort([CONTROL_C]);
+                }
+                else if (key === "reboot") {
+                    serial.writeToPort([CONTROL_D])
+                }
+                return "";
             }
         });
 
@@ -301,7 +338,7 @@ sound.beepPlay(500)`
     }, [props])
     
     return (
-        <div id={props.id} className={props.className + "m-4"}>
+        <div id={props.id}>
             <Tooltip 
                 title={buttonState.getState(currentState).tooltipText} 
                 placement="top"
@@ -318,19 +355,23 @@ sound.beepPlay(500)`
                     }
                 </Fab>
             </Tooltip>
-            <SnackbarAlert 
-                open={alert.open}
-                setOpen={() => {
-                    setAlert((prev) => {
-                        return ({
-                            ...prev,
-                            open: false
+            <div style={{textAlign: "left"}}>
+                <SnackbarAlert 
+                    open={alert.open}
+                    setOpen={() => {
+                        setAlert((prev) => {
+                            return ({
+                                ...prev,
+                                open: false
+                            })
                         })
-                    })
-                }}
-                text={alert.text}
-                type={alert.type}
-            />
+                    }}
+                    text={alert.text}
+                    type={alert.type}
+                    
+                />
+            </div>
+            
         </div>
     )
 }

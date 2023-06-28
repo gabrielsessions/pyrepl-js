@@ -1,4 +1,5 @@
 // A simple TypeScript Queue class
+
 class Queue {
     items: any[];
 
@@ -33,6 +34,10 @@ class Queue {
     
     public print(): void {
         console.log(this.items)
+    }
+
+    public getAll(): any[] { 
+        return (this.items)
     }
 
 }
