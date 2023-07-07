@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <h1>test</h1>
+
+  <p>Write something in the text field to trigger text checking</p>
+
+  <textarea type="text" id="myInput" oninput="myFunction()">>>> </textarea>
+
+
+  <script>
+    let curTextVal = ">>> "
+    function myFunction() {
+      let text = document.getElementById("myInput").value;
+      console.log(text.split("\n").at(-1));
+      console.log(curTextVal.split("\n").at(-1))
+      console.log(text.split("\n").at(-1) !== curTextVal.split("\n").at(-1))
+      if (text.split("\n").at(-1) === curTextVal.split("\n").at(-1)) {
+        document.getElementById("myInput").value = curTextVal;
+        return;
+      }
+      curTextVal = text;
+      document.getElementById("myInput").value = text;
+    }
+  </script>
+
+</body>
+
+</html>

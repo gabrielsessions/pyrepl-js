@@ -323,16 +323,15 @@ speaker.beep(500)`
                     serial.clearConsole();
                 }
                 else if (key === "stop") {
-                    serial.writeToPort([CONTROL_C]);
+                    serial.rawWriteToPort(WebSerial.CONTROL_C)
                 }
                 else if (key === "reboot") {
-                    serial.writeToPort([CONTROL_D])
+                    serial.rawWriteToPort(WebSerial.CONTROL_D)
                 }
                 return "";
             }
         });
 
-        const windowProp: string = "pyrepl"
 
         window.pyrepl = pyreplProxy;
     }, [props])
