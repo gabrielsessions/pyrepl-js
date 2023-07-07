@@ -308,6 +308,10 @@ speaker.beep(500)`
                     else 
                         console.error("Error: executeAfterInit value must be a function name. Value given to onActivation was: " + typeof value);
                 }
+
+                else if (key === "rawWrite") {
+                    serial.rawWriteToPort(value);
+                }
                 return true;
             },
 
