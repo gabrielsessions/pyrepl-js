@@ -188,7 +188,7 @@ export function ServiceButton(props: ButtonProps) {
             if (state === "Disconnected") {
                 setAlert({
                     open: true,
-                    text: "Connect your SPIKE above (select a Serial Port profile)",
+                    text: "Connect your Serial Device using the popup above",
                     type: "info"
                 })
                 openSerial(state, setState, serial)
@@ -240,7 +240,7 @@ speaker.beep(500)`
                 setState("Connected");
                 setAlert({
                     open: true,
-                    text: "Connection to SPIKE Prime Hub was successful",
+                    text: "Connection to Serial Device was successful",
                     type: "success"
                 })
             }
