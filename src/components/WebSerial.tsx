@@ -106,6 +106,7 @@ class WebSerial {
     // Publically accessible variables
     public isActive: boolean = false;
     public executeAfterInit: Function = () => {console.log("PyREPL Initialized")};
+    public onRead: (readValue: string) => void = (value) => console.log(value);
 
 
     set writer_Initialized(newVal: boolean) {
@@ -229,11 +230,12 @@ class WebSerial {
             try {
                 while (true) {
                 const { value, done } = await reader.read();
+                this.onRead(value);
                 if (done) {
                     break;
                 }
                     curLine += value;
-                    console.log(value)
+                    // console.log(value)
                     const lineArr = curLine.split('\n');
                     if (lineArr.length > 1) {
                         for (let i = 0; i < lineArr.length - 1; i++) {
@@ -290,7 +292,7 @@ class WebSerial {
         this.writer.write(WebSerial.CONTROL_E);
         // Writes code one line at a time
         lines.forEach((element) => {
-            console.log(element)
+            // console.log(element)
             this.writer.write(element + "\r\n");
         });
 

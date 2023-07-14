@@ -196,8 +196,8 @@ export function ServiceButton(props: ButtonProps) {
             if (state === "Connected") {
                 const pyrepl: any = window.pyrepl;
 
-                pyrepl.write = `from hub import speaker
-speaker.beep(500)`
+                pyrepl.write = `from hub import sound
+sound.beep(500)`
                 
             }
         }
@@ -311,6 +311,9 @@ speaker.beep(500)`
 
                 else if (key === "rawWrite") {
                     serial.rawWriteToPort(value);
+                }
+                else if (key === "consoleStream") {
+                    serial.onRead = value;
                 }
                 return true;
             },
