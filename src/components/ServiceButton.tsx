@@ -344,7 +344,7 @@ sound.beep(500)`
     }, [props])
     
     return (
-        <div id={props.id}>
+        <div id={props.id} className="border-2 border-black">
             <Tooltip 
                 title={buttonState.getState(currentState).tooltipText} 
                 placement="top"
